@@ -90,9 +90,9 @@ def handle_command(command_enum):
 
 def on_connect(self, mosq, obj, rc):
         self.subscribe("power", 0)
-        self.subscribe("source", 1)
-        self.subscribe("zone", 2)
-        self.subscribe("volume", 4)
+        self.subscribe("source", 0)
+        self.subscribe("zone", 0)
+        self.subscribe("volume", 0)
 
 def handle_power_message(msg):
     power = msg.payload.decode()
