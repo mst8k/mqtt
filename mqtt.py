@@ -13,6 +13,7 @@ GPIO.setup(LED_PIN,GPIO.OUT)   # Set pin function as output
 
 selected_room = "A"
 mute = 0
+power_state = "off"
 
 # Function to set the selected room
 def set_selected_room(room):
@@ -22,6 +23,10 @@ def set_selected_room(room):
 def set_mute(m):
     global mute
     mute = m
+
+def set_power_state(p):
+    global power_state
+    power_state = p
 
 class Command(Enum):
     NO_COMMAND = 0
@@ -98,17 +103,21 @@ def on_connect(self, mosq, obj, rc):
 def handle_power_message(msg):
     power = msg.payload.decode()
     if selected_room == "A":
-        if power == "on":
+        if power_state == "off":
+            set_power_state("on")
             handle_command(Command.ROOM_A_POWER_ON)
             print(f"ROOM A Received power: {msg.payload.decode()}")
-        elif power == "off":
+        else:
+            set_power_state("off")
             handle_command(Command.ROOM_A_POWER_OFF)
             print(f"ROOM A Received power: {msg.payload.decode()}")
     else:
-        if power == "on":
+        if power_state == "off":
+            set_power_state("on")
             handle_command(Command.ROOM_B_POWER_ON)
             print(f"ROOM B Received power: {msg.payload.decode()}")
-        elif power == "off":
+        else:
+            set_power_state("off")
             handle_command(Command.ROOM_B_POWER_OFF)
             print(f"ROOM B Received power: {msg.payload.decode()}")
 
