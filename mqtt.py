@@ -1,3 +1,4 @@
+import serial
 from time import sleep
 import os,sys
 from enum import Enum
