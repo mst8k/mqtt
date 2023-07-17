@@ -13,7 +13,11 @@ GPIO.setup(LED_PIN,GPIO.OUT)   # Set pin function as output
 
 selected_room = "A"
 mute = 0
-ser = serial.Serial ("/dev/ttyAMA0", 9600)    #Open port with baud rate
+
+# Configure UART parameters
+uart_device = '/dev/ttyS0'  # UART device path (UART0 on Raspberry Pi 4)
+baudrate = 4800
+ser = serial.Serial (uart_device, baudrate, timeout=1)    #Open port with baud rate
 
 # Function to set the selected room
 def set_selected_room(room):
@@ -23,6 +27,10 @@ def set_selected_room(room):
 def set_mute(m):
     global mute
     mute = m
+
+def write_to_device(data):
+    ser.write(data)
+    ser.flush()
 
 class Command(Enum):
     NO_COMMAND = 0
@@ -87,6 +95,7 @@ def handle_command(command_enum):
         raise ValueError("Invalid command_enum! Please pass a valid Command enum.")
 
     command_string = command_str_collection.get(command_enum, "Invalid command!")
+    write_to_device(command_string)
     print(command_string)
 
 
