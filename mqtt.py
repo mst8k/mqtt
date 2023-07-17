@@ -185,7 +185,6 @@ def handle_zone_message(msg):
         print(f"Received power: {msg.payload.decode()}")
 
 def on_message(client, userdata, msg):
-    ser.write(f"Received message on topic '{msg.topic}': {msg.payload.decode()}")
     print(f"Received message on topic '{msg.topic}': {msg.payload.decode()}")
     if msg.topic == "power":
         handle_power_message(msg)
