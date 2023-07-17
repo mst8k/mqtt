@@ -13,7 +13,7 @@ GPIO.setup(LED_PIN,GPIO.OUT)   # Set pin function as output
 
 selected_room = "A"
 mute = 0
-power_state = "off"
+ser = serial.Serial ("/dev/ttyAMA0", 9600)    #Open port with baud rate
 
 # Function to set the selected room
 def set_selected_room(room):
@@ -23,10 +23,6 @@ def set_selected_room(room):
 def set_mute(m):
     global mute
     mute = m
-
-def set_power_state(p):
-    global power_state
-    power_state = p
 
 class Command(Enum):
     NO_COMMAND = 0
@@ -103,21 +99,17 @@ def on_connect(self, mosq, obj, rc):
 def handle_power_message(msg):
     power = msg.payload.decode()
     if selected_room == "A":
-        if power_state == "off":
-            set_power_state("on")
+        if power == "on":
             handle_command(Command.ROOM_A_POWER_ON)
             print(f"ROOM A Received power: {msg.payload.decode()}")
-        else:
-            set_power_state("off")
+        elif power == "off":
             handle_command(Command.ROOM_A_POWER_OFF)
             print(f"ROOM A Received power: {msg.payload.decode()}")
     else:
-        if power_state == "off":
-            set_power_state("on")
+        if power == "on":
             handle_command(Command.ROOM_B_POWER_ON)
             print(f"ROOM B Received power: {msg.payload.decode()}")
-        else:
-            set_power_state("off")
+        elif power == "off":
             handle_command(Command.ROOM_B_POWER_OFF)
             print(f"ROOM B Received power: {msg.payload.decode()}")
 
@@ -184,6 +176,7 @@ def handle_zone_message(msg):
         print(f"Received power: {msg.payload.decode()}")
 
 def on_message(client, userdata, msg):
+    ser.write(f"Received message on topic '{msg.topic}': {msg.payload.decode()}")
     print(f"Received message on topic '{msg.topic}': {msg.payload.decode()}")
     if msg.topic == "power":
         handle_power_message(msg)
